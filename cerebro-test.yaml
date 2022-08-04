@@ -6,7 +6,7 @@ metadata:
   name: cerebro-gui-test
 spec:
   progressDeadlineSeconds: 600
-  replicas: 0
+  replicas: 1
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -24,8 +24,8 @@ spec:
       containers:
       - args:
         - -Dconfig.file=/etc/cerebro/application.conf
-        image: lmenezes/cerebro:0.9,4
-        imagePullPolicy: Never
+        image: lmenezes/cerebro:0.9.4
+        imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -69,7 +69,7 @@ spec:
             memory: 2Gi
           requests:
             cpu: "1"
-            memory: 20000Gi
+            memory: 2Gi
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -89,3 +89,18 @@ spec:
         name: logs
       - emptyDir: {}
         name: tmp
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cerebro-gui
+data:
+  application.conf: |
+    secret = someSecretThatHasEnoughEntropy
+    auth {
+      type = basic
+      settings {
+        username = admin
+        password = admin
+      }
+    }
